@@ -61,6 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     super.dispose();
   }
+  void clearText() {
+    position.clear();
+  }
 
   _addDeviceTolist(final BluetoothDevice device) {
     if (!widget.devicesList.contains(device)) {
@@ -140,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
   }
-
+  
   ListView _buildView() {
     if (_connectedDevice != null) {
       return _buildConnectDeviceView();
@@ -307,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Text('移動',
                           style: TextStyle(color: Colors.black, fontSize: 23)),
                       onPressed: () {
-                        final _position = position.text;
+                        final  _position = position.text;
 
                         c3.write(utf8.encode(_position));
                       },
@@ -361,12 +364,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontSize: 40, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        (info == null ? "未測量" : "$info"),
-                        style: TextStyle(fontSize: (info == null ? 40 : 80)),
+                        ((info == null || info==0 )? "0" : "$info"),//
+                        style: TextStyle(fontSize: ((info == null || info==0)? 40 : 60)),
                       ),
                       Text(
-                        (info == null ? "" : "%"),
-                        style: TextStyle(fontSize: 50),
+                        ((info == null || info==0) ? "" : "%"),
+                        style: TextStyle(fontSize: 30),
                       ),
                     ],
                   ),
@@ -421,11 +424,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 child:
                     Text('Disconnect', style: TextStyle(color: Colors.white)),
                 onPressed: () async {
+                  await c1.write(utf8.encode("reset"));
                   await myDevice?.disconnect();
 
                   setState(() {
                     info = null;
+                    light=null;
                     _connectedDevice = null;
+                    clearText();
+
+                    
                     widget.flutterBlue.startScan();
                   });
                 }),
